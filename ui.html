@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colour Palette Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark {
+      background-color: black;
+      color: white;
+    }
+
+    .light {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .title-section {
+      display: flex;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .theme-toggle {
+      margin-left: 16px;
+      padding: 8px;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dark .theme-toggle {
+      background-color: #374151;
+    }
+
+    .dark .theme-toggle:hover {
+      background-color: #4b5563;
+    }
+
+    .light .theme-toggle {
+      background-color: #e5e7eb;
+    }
+
+    .light .theme-toggle:hover {
+      background-color: #d1d5db;
+    }
+
+    .slider-section {
+      display: flex;
+      align-items: center;
+    }
+
+    .slider-label {
+      margin-right: 8px;
+    }
+
+    .slider {
+      width: 96px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .dark .slider {
+      background: #4b5563;
+    }
+
+    .light .slider {
+      background: #d1d5db;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .dark .slider::-webkit-slider-thumb {
+      background: #d1d5db;
+    }
+
+    .light .slider::-webkit-slider-thumb {
+      background: #4b5563;
+    }
+
+    .slider-value {
+      margin-left: 8px;
+    }
+
+    .palette-grid {
+      display: grid;
+      gap: 8px;
+      flex-grow: 1;
+    }
+
+    .panel {
+      min-height: 150px;
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .panel-controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .panel:hover .panel-controls {
+      opacity: 1;
+    }
+
+    .panel-button {
+      padding: 4px;
+      margin-bottom: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-button:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .color-input {
+      margin-top: auto;
+      margin-bottom: 16px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      width: 96px;
+      text-align: center;
+      border: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .panel:hover .color-input {
+      opacity: 1;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .generate-button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dark .generate-button {
+      background-color: white;
+      color: black;
+    }
+
+    .dark .generate-button:hover {
+      opacity: 0.9;
+    }
+
+    .light .generate-button {
+      background-color: black;
+      color: white;
+    }
+
+    .light .generate-button:hover {
+      opacity: 0.9;
+    }
+
+    .create-button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+      background-color: #4f46e5;
+      color: white;
+    }
+
+    .create-button:hover {
+      background-color: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app dark">
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="title-section">
+          <h1 class="title">Colour Palette Generator</h1>
+          <button id="theme-toggle" class="theme-toggle">
+            <svg id="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+            <svg id="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="slider-section">
+          <label class="slider-label">Number of colours:</label>
+          <input 
+            id="num-colors-slider" 
+            type="range" 
+            min="2" 
+            max="6" 
+            value="4" 
+            class="slider"
+            step="1"
+          />
+          <span id="num-colors-value" class="slider-value">4</span>
+        </div>
+      </div>
+      
+      <!-- Color Panels -->
+      <div id="palette-grid" class="palette-grid"></div>
+      
+      <!-- Footer -->
+      <div class="footer">
+        <button id="create-button" class="create-button">
+          Create in Figma
+        </button>
+        <button id="generate-button" class="generate-button">
+          Generate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let darkMode = true;
+    let numColors = 4;
+    let colors = [];
+    let lockedColors = [];
+
+    // DOM Elements
+    const app = document.getElementById('app');
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+    const numColorsSlider = document.getElementById('num-colors-slider');
+    const numColorsValue = document.getElementById('num-colors-value');
+    const paletteGrid = document.getElementById('palette-grid');
+    const generateButton = document.getElementById('generate-button');
+    const createButton = document.getElementById('create-button');
+
+    // Generate random hex color
+    function generateRandomColor() {
+      return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    }
+
+    // Generate palette
+    function generatePalette() {
+      const newColors = [...colors];
+      for (let i = 0; i < numColors; i++) {
+        if (!lockedColors[i]) {
+          newColors[i] = generateRandomColor();
+        }
+      }
+      colors = newColors;
+      renderPalette();
+    }
+
+    // Render the palette grid
+    function renderPalette() {
+      // Clear the grid
+      paletteGrid.innerHTML = '';
+      
+      // Set grid columns
+      paletteGrid.style.gridTemplateColumns = `repeat(${numColors}, 1fr)`;
+      
+      // Create panels
+      for (let i = 0; i < numColors; i++) {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.style.backgroundColor = colors[i];
+        
+        // Controls container
+        const controls = document.createElement('div');
+        controls.className = 'panel-controls';
+        
+        // Close button
+        const closeButton = document.createElement('button');
+        closeButton.className = 'panel-button';
+        closeButton.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        `;
+        closeButton.addEventListener('click', () => removePanel(i));
+        
+        // Copy button
+        const copyButton = document.createElement('button');
+        copyButton.className = 'panel-button';
+        copyButton.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+          </svg>
+        `;
+        copyButton.addEventListener('click', () => copyColor(colors[i]));
+        
+        // Lock button
+        const lockButton = document.createElement('button');
+        lockButton.className = 'panel-button';
+        lockButton.innerHTML = lockedColors[i] ? `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        ` : `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+          </svg>
+        `;
+        lockButton.addEventListener('click', () => toggleLock(i));
+        
+        // Color input
+        const colorInput = document.createElement('input');
+        colorInput.className = 'color-input';
+        colorInput.type = 'text';
+        colorInput.value = colors[i];
+        colorInput.placeholder = colors[i];
+        colorInput.addEventListener('change', (e) => updateColor(i, e.target.value));
+        
+        // Add elements to panel
+        controls.appendChild(closeButton);
+        controls.appendChild(copyButton);
+        controls.appendChild(lockButton);
+        panel.appendChild(controls);
+        panel.appendChild(colorInput);
+        
+        // Add panel to grid
+        paletteGrid.appendChild(panel);
+      }
+    }
+
+    // Copy color to clipboard
+    function copyColor(color) {
+      navigator.clipboard.writeText(color);
+    }
+
+    // Toggle lock for a color
+    function toggleLock(index) {
+      lockedColors[index] = !lockedColors[index];
+      renderPalette();
+    }
+
+    // Remove a color panel
+    function removePanel(index) {
+      if (numColors > 2) {
+        colors.splice(index, 1);
+        lockedColors.splice(index, 1);
+        numColors--;
+        numColorsSlider.value = numColors;
+        numColorsValue.textContent = numColors;
+        renderPalette();
+      }
+    }
+
+    // Update color manually
+    function updateColor(index, value) {
+      if (/^#[0-9A-F]{6}$/i.test(value)) {
+        colors[index] = value;
+        renderPalette();
+      }
+    }
+
+    // Initialize
+    function initialize() {
+      // Generate initial colors
+      for (let i = 0; i < numColors; i++) {
+        colors.push(generateRandomColor());
+        lockedColors.push(false);
+      }
+      
+      // Render initial palette
+      renderPalette();
+      
+      // Set up event listeners
+      themeToggle.addEventListener('click', () => {
+        darkMode = !darkMode;
+        app.className = darkMode ? 'app dark' : 'app light';
+        sunIcon.style.display = darkMode ? 'block' : 'none';
+        moonIcon.style.display = darkMode ? 'none' : 'block';
+      });
+      
+      numColorsSlider.addEventListener('input', (e) => {
+        const newNumColors = parseInt(e.target.value);
+        
+        // Adjust arrays when numColors changes
+        if (colors.length < newNumColors) {
+          // Add new colors
+          for (let i = colors.length; i < newNumColors; i++) {
+            colors.push(generateRandomColor());
+            lockedColors.push(false);
+          }
+        } else if (colors.length > newNumColors) {
+          // Remove excess colors
+          colors = colors.slice(0, newNumColors);
+          lockedColors = lockedColors.slice(0, newNumColors);
+        }
+        
+        numColors = newNumColors;
+        numColorsValue.textContent = numColors;
+        renderPalette();
+      });
+      
+      generateButton.addEventListener('click', generatePalette);
+      
+      // Create in Figma button
+      createButton.addEventListener('click', () => {
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'create-rectangles',
+            colors: colors
+          } 
+        }, '*');
+      });
+      
+      // Spacebar shortcut for generate
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          generatePalette();
+        }
+      });
+    }
+
+    // Listen for messages from the plugin
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (message && message.type === 'creation-complete') {
+        console.log(message.message);
+      }
+    };
+
+    // Initialize the app
+    initialize();
+  </script>
+</body>
+</html>
