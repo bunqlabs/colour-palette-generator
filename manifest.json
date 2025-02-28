@@ -1,9 +1,10 @@
 {
   "name": "Colour Palette Generator",
-  "id": "colour-palette-generator",
+  "id": "1477397844024415465",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
+  "documentAccess": "dynamic-page",
   "editorType": ["figma"],
   "networkAccess": {
     "allowedDomains": ["none"]
